@@ -1,25 +1,28 @@
 import pygame
 
+from scenes.main_game import MainGameScene
 from scenes.menu import MenuScene
 from settings import Settings
+from controllers.scene_controller import SceneController
 
 
 class Application:
     def __init__(self, screen):
         self.screen = screen
         self.game_over = False
-        self.scenes = [
-            MenuScene(),
-        ]
+        self.scenes = {
+            "Menu": MenuScene(),
+            "MainGame": MainGameScene(),
+        }
 
     def scene_activate(self):
-        Settings.scene_changed = False
-        self.scenes[Settings.scene_index].activate()
+        SceneController.scene_changed = False
+        self.scenes[SceneController.scene_name].activate()
 
     def scene_event(self):
         for event in pygame.event.get():
             self.process_application_exit(event)
-            self.scenes[Settings.scene_index].process_event(event)
+            self.scenes[SceneController.scene_name].process_event(event)
 
     def process_application_exit(self, event):
         if event.type != pygame.QUIT:
@@ -27,15 +30,15 @@ class Application:
         self.game_over = True
 
     def scene_logic(self):
-        self.scenes[Settings.scene_index].process_logic()
+        self.scenes[SceneController.scene_name].process_logic()
 
     def scene_draw(self):
         self.screen.fill(Settings.BACKGROUND_COLOR)
-        self.scenes[Settings.scene_index].process_draw(self.screen)
+        self.scenes[SceneController.scene_name].process_draw(self.screen)
         pygame.display.flip()
 
     def process_frame(self):
-        if Settings.scene_changed:
+        if SceneController.scene_changed:
             self.scene_activate()
             return
 
