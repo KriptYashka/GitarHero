@@ -2,6 +2,7 @@ import random
 
 import pygame
 
+from controllers.arrow_controller import ArrowController
 from objects.base import BaseObject
 
 
@@ -25,8 +26,7 @@ class Arrow(BaseObject):
     def __init__(self, pos: list, direction: int):
         super().__init__(pos)
         self.direction = direction
-        self.height = 100
-        self.width = 100
+        self.width = self.height = ArrowController.SIZE
         self.body = []
         self.outline = []
         self.color_body = ArrowData.color[self.direction]

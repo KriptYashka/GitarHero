@@ -1,6 +1,6 @@
 class SceneController:
     scene_changed = True
-    scene_name = "Menu"
+    scene_name = "MainGame"
 
     @staticmethod
     def set_scene(scene_name: str):
