@@ -39,6 +39,10 @@ class Arrow(BaseObject):
         self.process_rotate(arrow_outline)
         self.body, self.outline = arrow_body, arrow_outline
 
+    def logic(self):
+        self._x -= 1
+        self.activate()
+
     def process_rotate(self, items):
         for i in range(len(items)):
             for j in range(len(items[i])):
@@ -67,8 +71,8 @@ class Arrow(BaseObject):
             [width_base, -self.height // 2],
             [-width_base, -self.height // 2],
         ]
-        self.width -= shadow
-        self.height -= shadow
+        self.width -= shadow * 2
+        self.height -= shadow * 2
         return [base, triangle]
 
     def draw(self, screen: pygame.Surface):
