@@ -9,8 +9,8 @@ from objects.base import BaseObject
 class Direction:
     UP = 0
     RIGHT = 1
-    DOWN = 2
-    LEFT = 3
+    LEFT = 2
+    DOWN = 3
 
 
 class ArrowData:
