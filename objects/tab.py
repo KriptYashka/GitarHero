@@ -1,6 +1,7 @@
 import pygame
 
 from objects.base import BaseObject
+from objects.draw_tool import get_gradient
 from settings import Settings
 
 
@@ -17,21 +18,16 @@ class TabLine(BaseObject):
         self.height = height
         self.v_padding = 5
         background_color = [[150, 50, 0], [200, 100, 30]]
-        click_line_color = [[150, 50, 0], [200, 100, 30]]
+        click_line_color = [[150, 50, 0], [0, 100, 30]]
         self.hor_line_color = [100, 0, 0]
 
-        self.body = self.get_v_gradient_surface(*background_color)
-        self.click_line = self.get_v_gradient_surface(*click_line_color)
-
-    def get_v_gradient_surface(self, left_color: list, right_color: list) -> pygame.Surface:
-        colour_rect = pygame.Surface((2, 2))
-        pygame.draw.line(colour_rect, left_color, (0, 0), (0, 1))
-        pygame.draw.line(colour_rect, right_color, (1, 0), (1, 1))
-        return pygame.transform.smoothscale(colour_rect, (self.width, self.height))
+        self.body = get_gradient(background_color, [self.width, self.height])
+        self.click_line = get_gradient(click_line_color, [100, self.height], True)  # Вынести в отдельный класс
 
     def draw(self, screen: pygame.Surface):
         pygame.draw.rect(screen, [0] * 3, [self._x, self._y, self.width, self.height])
         screen.blit(self.body, [self._x, self._y + self.v_padding, self.width, self.height - self.v_padding])
+        # screen.blit(self.click_line, [self._x, self._y + self.v_padding, self.width, self.height - self.v_padding])
         pygame.draw.rect(screen, self.hor_line_color, [self._x, self._y + self.height // 2, self.width, 3])
 
 
