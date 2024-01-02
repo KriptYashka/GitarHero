@@ -18,7 +18,6 @@ class MainGameScene(BaseScene):
     def _set_up_objects(self):
         self._objects = [
             Tab([0, 0]),
-            # Arrow([300, 225], Direction.UP),
             # Arrow([400, 75], Direction.LEFT),
             # Arrow([500, 75], Direction.RIGHT),
             # Arrow([600, 375], Direction.DOWN),
