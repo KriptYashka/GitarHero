@@ -3,7 +3,7 @@ import pygame
 from scenes.main_game import MainGameScene
 from scenes.menu import MenuScene
 from settings import Settings
-from controllers.scene_controller import SceneController
+from settings.scene_settings import SceneController
 
 
 class Application:

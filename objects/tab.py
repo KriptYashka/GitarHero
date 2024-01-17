@@ -1,21 +1,22 @@
 import pygame
 
-from controllers.tab_controller import TabController as TC
+from handlers.song_reader import read_song
+from settings.tab_settings import TabSettings
 from objects.base import BaseObject
 from objects.draw_tool import get_gradient
-from settings import Settings
+from settings.window_settings import Settings
 
 
 class TabLineClickArea(BaseObject):
     def __init__(self, pos: list):
         super().__init__(pos)
-        self._x += TC.CLICK_LINE_LEFT_MARGIN
-        self._y += TC.LINE_PADDING
-        self.width, self.height = TC.CLICK_LINE_WIDTH, TC.HEIGHT // 4
-        self.body_l = get_gradient(TC.CLICK_LINE_COLOR, [self.width // 2, self.height], True)
-        self.body_r = get_gradient(TC.CLICK_LINE_COLOR[::-1], [self.width // 2, self.height], True)
+        self._x += TabSettings.CLICK_LINE_LEFT_MARGIN
+        self._y += TabSettings.LINE_PADDING
+        self.width, self.height = TabSettings.CLICK_LINE_WIDTH, TabSettings.HEIGHT // 4
+        self.body_l = get_gradient(TabSettings.CLICK_LINE_COLOR, [self.width // 2, self.height], True)
+        self.body_r = get_gradient(TabSettings.CLICK_LINE_COLOR[::-1], [self.width // 2, self.height], True)
 
-        self.border_color = list(map(lambda x: max(0, x - 50), (TC.CLICK_LINE_COLOR[1])))
+        self.border_color = list(map(lambda x: max(0, x - 50), (TabSettings.CLICK_LINE_COLOR[1])))
         self.border_width = 5
 
     def draw(self, screen: pygame.Surface):
@@ -32,11 +33,11 @@ class TabLine(BaseObject):
         super().__init__(pos)
         self.width = Settings.WINDOW_WIDTH
         self.height = height
-        self.v_padding = TC.LINE_PADDING
-        self.l_margin = TC.CLICK_LINE_LEFT_MARGIN
-        self.hor_line_color = TC.HOR_LINE_COLOR
+        self.v_padding = TabSettings.LINE_PADDING
+        self.l_margin = TabSettings.CLICK_LINE_LEFT_MARGIN
+        self.hor_line_color = TabSettings.HOR_LINE_COLOR
 
-        self.body = get_gradient(TC.LINE_COLOR,
+        self.body = get_gradient(TabSettings.LINE_COLOR,
                                  [self.width, self.height])
         self.click_area = TabLineClickArea(pos)
 
@@ -52,15 +53,29 @@ class Tab(BaseObject):
     def __init__(self, pos: list = None):
         pos = pos or [0, 0]
         super().__init__(pos)
-        self.lines = [TabLine([pos[0], TC.HEIGHT // 4 * _], TC.HEIGHT // 4) for _ in range(4)]
+        self.lines = [TabLine([pos[0], TabSettings.HEIGHT // 4 * _], TabSettings.HEIGHT // 4) for _ in range(4)]
         click_line_width = 5
         self.click_line_rect = (
-            pygame.Rect(self._x + TC.CLICK_LINE_LEFT_MARGIN + TC.CLICK_LINE_WIDTH // 2 - click_line_width // 2,
-                        self._y, click_line_width, TC.HEIGHT + TC.LINE_PADDING)
+            pygame.Rect(self._x + TabSettings.CLICK_LINE_LEFT_MARGIN + TabSettings.CLICK_LINE_WIDTH // 2 - click_line_width // 2,
+                        self._y, click_line_width, TabSettings.HEIGHT + TabSettings.LINE_PADDING)
         )
-        self.click_line_color = TC.HOR_LINE_COLOR
+        self.click_line_color = TabSettings.HOR_LINE_COLOR
 
     def draw(self, screen: pygame.Surface):
         for line in self.lines:
             line.draw(screen)
         pygame.draw.rect(screen, self.click_line_color, self.click_line_rect)
+
+
+class TabController(BaseObject):
+    def __init__(self):
+        super().__init__([0, 0])
+        self.data_items = []
+
+    def read_song(self):
+        items = read_song("01_test")
+        print(*items)
+
+
+TabController().read_song()
+

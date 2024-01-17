@@ -1,35 +1,17 @@
-import random
-
 import pygame
 
-from controllers.arrow_controller import ArrowController
+from settings.arrow_settings import ArrowSettings, Direction
 from objects.base import BaseObject
-
-
-class Direction:
-    UP = 0
-    RIGHT = 1
-    LEFT = 2
-    DOWN = 3
-
-
-class ArrowData:
-    color = {
-        Direction.UP: [200, 0, 0],
-        Direction.RIGHT: [50, 200, 50],
-        Direction.DOWN: [0, 0, 200],
-        Direction.LEFT: [200, 100, 200],
-    }
 
 
 class Arrow(BaseObject):
     def __init__(self, pos: list, direction: int):
         super().__init__(pos)
         self.direction = direction
-        self.width = self.height = ArrowController.SIZE
+        self.width = self.height = ArrowSettings.SIZE
         self.body = []
         self.outline = []
-        self.color_body = ArrowData.color[self.direction]
+        self.color_body = ArrowSettings.color[self.direction]
         self.color_outline = [100] * 3
 
     def activate(self):

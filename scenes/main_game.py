@@ -1,14 +1,8 @@
 import random
 
-import pygame
-
-from controllers.scene_controller import SceneController
-from objects.arrow import Arrow, Direction
+from objects.arrow import Arrow
 from objects.tab import Tab
 from scenes.base import BaseScene
-
-from objects.buttons import Button
-from objects.buttons import ButtonSetup as bs
 
 
 class MainGameScene(BaseScene):

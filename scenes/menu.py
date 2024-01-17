@@ -1,6 +1,6 @@
 import pygame
 
-from controllers.scene_controller import SceneController
+from settings.scene_settings import SceneController
 from scenes.base import BaseScene
 
 from objects.buttons import Button
