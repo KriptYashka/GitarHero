@@ -16,6 +16,7 @@ class Direction:
 
 
 class ArrowSettings:
+    SPEED = 5
     SIZE = 75
     color = {
         Direction.UP: [200, 0, 0],

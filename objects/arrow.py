@@ -22,8 +22,10 @@ class Arrow(BaseObject):
         self.body, self.outline = arrow_body, arrow_outline
 
     def logic(self):
-        self._x -= 1
+        self._x -= ArrowSettings.SPEED
         self.activate()
+        if self._x < -ArrowSettings.SIZE:
+            del self
 
     def process_rotate(self, items):
         for i in range(len(items)):

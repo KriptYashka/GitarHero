@@ -2,7 +2,7 @@ import pygame
 
 from scenes.main_game import MainGameScene
 from scenes.menu import MenuScene
-from settings import Settings
+from settings.window_settings import Settings
 from settings.scene_settings import SceneController
 
 
@@ -45,7 +45,7 @@ class Application:
         self.scene_event()
         self.scene_logic()
         self.scene_draw()
-        pygame.time.wait(5)
+        pygame.time.wait(1000//60)
 
     def run(self):
         while not self.game_over:

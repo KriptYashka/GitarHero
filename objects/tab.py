@@ -1,9 +1,16 @@
+import datetime
+from typing import List, Optional
+
 import pygame
 
 from handlers.song_reader import read_song
-from settings.tab_settings import TabSettings
+from handlers.song_structure import ArrowData, AccordData
 from objects.base import BaseObject
 from objects.draw_tool import get_gradient
+from objects.arrow import Arrow
+from objects.empty import EmptyArrow
+from settings.arrow_settings import ArrowSettings
+from settings.tab_settings import TabSettings
 from settings.window_settings import Settings
 
 
@@ -49,33 +56,112 @@ class TabLine(BaseObject):
                                                        self.width, 3])
 
 
+class TabSongController(BaseObject):
+    @staticmethod
+    def get_lines_coord(tab_pos_y: int = 0):
+        step = TabSettings.HEIGHT / 4
+        lines_y = [int(tab_pos_y + step / 2 + step * i) for i in range(4)]
+        return lines_y
+
+    class Timer:
+        def __init__(self):
+            self.time_start = self.time_current = None
+            self.reset()
+
+        def reset(self):
+            self.time_start = self.time_current = pygame.time.get_ticks()
+
+        def get_time_from_start(self):
+            secs = (pygame.time.get_ticks() - self.time_start) / 1000
+            return datetime.time(minute=int(secs) // 60, second=int(secs) % 60,
+                                 microsecond=int(secs - int(secs)) * 1000000)
+
+    def __init__(self):
+        super().__init__([0, 0])
+        self.data_items: List[Optional[AccordData, ArrowData]] = []
+        self.items: List[BaseObject] = []
+        self.is_playing: bool = False
+        self.song: Optional[pygame.mixer.Sound] = None
+        self.is_song_playing = False
+
+        self.timer = self.Timer()
+        self.req_time_start_song = datetime.time()
+        self.iter = None
+        self.next_elem = None
+        self.lines_y = self.get_lines_coord(0)
+        self.pos_left = TabSettings.CLICK_LINE_LEFT_MARGIN + TabSettings.CLICK_LINE_WIDTH // 2
+        self.pos_right = Settings.WINDOW_WIDTH + ArrowSettings.SIZE
+        self.empty: Optional[EmptyArrow] = None
+
+    def read_song(self, name: str = "01_test"):
+        self.song, self.data_items = read_song(name)
+        self.iter = iter(self.data_items)
+
+    def start(self):
+        self.read_song()
+        self.is_playing = True
+        self.timer.reset()
+        self.empty = EmptyArrow([self.pos_right, self.lines_y[0]])
+        self.items.append(self.empty)
+        secs = (self.pos_right - self.pos_left + ArrowSettings.SIZE) / (
+                    ArrowSettings.SPEED * 60)  # Умножаем на время кадра
+        self.req_time_start_song = datetime.time(second=int(secs), microsecond=int((secs - int(secs)) * 1000000))
+        self.next_elem = next(self.iter)
+
+    def logic(self):
+        if not self.is_playing:
+            return None
+        if not self.is_song_playing and self.empty.is_reached:
+            self.song.play()
+            self.is_song_playing = True
+            del self.empty
+        if self.next_elem is None:
+            return None
+        if self.timer.get_time_from_start() >= self.next_elem.time_start:
+            if isinstance(self.next_elem, ArrowData):
+                direct = self.next_elem.direction
+                self.items.append(Arrow([self.pos_right, self.lines_y[direct]], direct))
+            elif isinstance(self.next_elem, AccordData):
+                pass
+
+            print(self.next_elem)
+            try:
+                self.next_elem = next(self.iter)
+            except StopIteration:
+                self.next_elem = None
+
+
 class Tab(BaseObject):
     def __init__(self, pos: list = None):
         pos = pos or [0, 0]
         super().__init__(pos)
+
+        self.song_controller = TabSongController()
+
         self.lines = [TabLine([pos[0], TabSettings.HEIGHT // 4 * _], TabSettings.HEIGHT // 4) for _ in range(4)]
         click_line_width = 5
         self.click_line_rect = (
-            pygame.Rect(self._x + TabSettings.CLICK_LINE_LEFT_MARGIN + TabSettings.CLICK_LINE_WIDTH // 2 - click_line_width // 2,
-                        self._y, click_line_width, TabSettings.HEIGHT + TabSettings.LINE_PADDING)
+            pygame.Rect(
+                self._x + TabSettings.CLICK_LINE_LEFT_MARGIN + TabSettings.CLICK_LINE_WIDTH // 2 - click_line_width // 2,
+                self._y, click_line_width, TabSettings.HEIGHT + TabSettings.LINE_PADDING)
         )
         self.click_line_color = TabSettings.HOR_LINE_COLOR
+
+    def activate(self):
+        self.song_controller.start()
+
+    def logic(self):
+        self.song_controller.logic()
+        for item in self.song_controller.items:
+            item.logic()
 
     def draw(self, screen: pygame.Surface):
         for line in self.lines:
             line.draw(screen)
         pygame.draw.rect(screen, self.click_line_color, self.click_line_rect)
+        for item in self.song_controller.items:
+            item.draw(screen)
 
 
-class TabController(BaseObject):
-    def __init__(self):
-        super().__init__([0, 0])
-        self.data_items = []
-
-    def read_song(self):
-        items = read_song("01_test")
-        print(*items)
-
-
-TabController().read_song()
-
+if __name__ == "__main__":
+    TabSongController().read_song()

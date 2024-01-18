@@ -2,6 +2,8 @@ import datetime
 import os
 from typing import List
 
+import pygame
+
 from handlers.song_structure import ArrowData, AccordData
 from settings.arrow_settings import Direction
 from settings.window_settings import Settings
@@ -31,5 +33,7 @@ def read_song(path: str):
             continue
         if (item := get_data(line.strip().split())) is not None:
             key_data.append(item)
-    return key_data
+
+    song = pygame.mixer.Sound(os.path.join(Settings.ROOT_DIR, f"songs/{path}/song.mp3"))
+    return song, key_data
 
