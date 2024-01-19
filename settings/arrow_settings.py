@@ -16,8 +16,8 @@ class Direction:
 
 
 class ArrowSettings:
-    SPEED = 5
-    SIZE = 75
+    SPEED = 8
+    SIZE = 100
     color = {
         Direction.UP: [200, 0, 0],
         Direction.RIGHT: [50, 200, 50],

@@ -24,8 +24,8 @@ class Arrow(BaseObject):
     def logic(self):
         self._x -= ArrowSettings.SPEED
         self.activate()
-        if self._x < -ArrowSettings.SIZE:
-            del self
+        # if self._x < -ArrowSettings.SIZE:
+        #     del self
 
     def process_rotate(self, items):
         for i in range(len(items)):

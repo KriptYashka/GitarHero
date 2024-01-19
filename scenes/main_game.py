@@ -1,5 +1,7 @@
 import random
 
+import pygame
+
 from objects.arrow import Arrow
 from objects.tab import Tab
 from scenes.base import BaseScene
@@ -14,8 +16,11 @@ class MainGameScene(BaseScene):
             Tab([0, 0]),
         ]
 
-    def process_additional_logic(self):
-        pass
-        # if random.randint(0, 50) == 0:
-        #     y = random.choice([i + 50 for i in range(0, 400, 100)])
-        #     self._objects.append(Arrow([1200, y], y // 100))
+    # def additional_process_event(self, event):
+    #     keys = {
+    #         pygame.K_w: "W",
+    #         pygame.K_a: "A",
+    #         pygame.K_s: "S",
+    #         pygame.K_d: "D",
+    #     }
+

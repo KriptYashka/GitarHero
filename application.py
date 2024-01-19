@@ -10,6 +10,7 @@ class Application:
     def __init__(self, screen):
         self.screen = screen
         self.game_over = False
+        self.clock = pygame.time.Clock()
         self.scenes = {
             "Menu": MenuScene(),
             "MainGame": MainGameScene(),
@@ -45,7 +46,7 @@ class Application:
         self.scene_event()
         self.scene_logic()
         self.scene_draw()
-        pygame.time.wait(1000//60)
+        self.clock.tick(60)
 
     def run(self):
         while not self.game_over:

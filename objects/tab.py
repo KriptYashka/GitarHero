@@ -71,10 +71,12 @@ class TabSongController(BaseObject):
         def reset(self):
             self.time_start = self.time_current = pygame.time.get_ticks()
 
-        def get_time_from_start(self):
-            secs = (pygame.time.get_ticks() - self.time_start) / 1000
-            return datetime.time(minute=int(secs) // 60, second=int(secs) % 60,
-                                 microsecond=int(secs - int(secs)) * 1000000)
+        def get_time_from_start(self, flag=False):
+            ticks = pygame.time.get_ticks()
+            secs = (ticks - self.time_start) / 1000
+            dt = datetime.time(minute=int(secs) // 60, second=int(secs) % 60,
+                               microsecond=int((secs - int(secs)) * 1_000_000))
+            return dt
 
     def __init__(self):
         super().__init__([0, 0])
@@ -85,6 +87,7 @@ class TabSongController(BaseObject):
         self.is_song_playing = False
 
         self.timer = self.Timer()
+        self.shift_timer = self.Timer()
         self.req_time_start_song = datetime.time()
         self.iter = None
         self.next_elem = None
@@ -93,28 +96,48 @@ class TabSongController(BaseObject):
         self.pos_right = Settings.WINDOW_WIDTH + ArrowSettings.SIZE
         self.empty: Optional[EmptyArrow] = None
 
+        self.fout = open("record/rec1.txt", "w")
+
+    def __del__(self):
+        self.fout.close()
+
     def read_song(self, name: str = "01_test"):
         self.song, self.data_items = read_song(name)
         self.iter = iter(self.data_items)
 
     def start(self):
-        self.read_song()
+        self.read_song("02_DC_Besporyadok")
         self.is_playing = True
         self.timer.reset()
         self.empty = EmptyArrow([self.pos_right, self.lines_y[0]])
         self.items.append(self.empty)
         secs = (self.pos_right - self.pos_left + ArrowSettings.SIZE) / (
-                    ArrowSettings.SPEED * 60)  # Умножаем на время кадра
-        self.req_time_start_song = datetime.time(second=int(secs), microsecond=int((secs - int(secs)) * 1000000))
+                ArrowSettings.SPEED * 60)  # Умножаем на время кадра
+        self.req_time_start_song = datetime.time(second=int(secs), microsecond=int((secs - int(secs)) * 1_000_000))
         self.next_elem = next(self.iter)
 
+    def event(self, event: pygame.event.Event):
+        keys = {
+            pygame.K_UP: "W",
+            pygame.K_LEFT: "A",
+            pygame.K_DOWN: "S",
+            pygame.K_RIGHT: "D",
+        }
+        if event.type == pygame.KEYDOWN:
+            if event.key in keys:
+                time = self.shift_timer.get_time_from_start(True)
+                self.fout.write(
+                    keys[event.key] + " - " + f"{time.minute:02}:{time.second:02}:{time.microsecond//1000:03}\n")
+                print(keys[event.key] + " - " + f"{time.minute:02}:{time.second:02}:{time.microsecond//1000:03}")
+
     def logic(self):
+        # print(pygame.time.get_ticks())
         if not self.is_playing:
             return None
         if not self.is_song_playing and self.empty.is_reached:
             self.song.play()
             self.is_song_playing = True
-            del self.empty
+            self.shift_timer.reset()
         if self.next_elem is None:
             return None
         if self.timer.get_time_from_start() >= self.next_elem.time_start:
@@ -124,7 +147,7 @@ class TabSongController(BaseObject):
             elif isinstance(self.next_elem, AccordData):
                 pass
 
-            print(self.next_elem)
+            # print(self.next_elem)
             try:
                 self.next_elem = next(self.iter)
             except StopIteration:
@@ -149,6 +172,9 @@ class Tab(BaseObject):
 
     def activate(self):
         self.song_controller.start()
+
+    def event(self, event: pygame.event.Event):
+        self.song_controller.event(event)
 
     def logic(self):
         self.song_controller.logic()
