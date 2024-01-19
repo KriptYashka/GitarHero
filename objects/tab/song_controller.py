@@ -20,6 +20,18 @@ class SongController(BaseObject):
         lines_y = [int(tab_pos_y + step / 2 + step * i) for i in range(4)]
         return lines_y
 
+    class Timer:
+        def __init__(self):
+            self.tick_start = pygame.time.get_ticks()
+
+        def reset(self):
+            self.__init__()
+
+        def get_time_from_start(self):
+            secs = (pygame.time.get_ticks() - self.tick_start) / 1000
+            return datetime.time(minute=int(secs) // 60, second=int(secs) % 60,
+                                 microsecond=int((secs - int(secs)) * 1_000_000))
+
     class Recorder:
         def __init__(self, path: str = "test.txt", in_file=True):
             self.keys = {
@@ -41,25 +53,15 @@ class SongController(BaseObject):
             self.timer.reset()
 
         def event(self, event: pygame.event.Event):
+            print(self.timer.tick_start)
             if not event.type == pygame.KEYDOWN:
                 return
             if not (event.key in self.keys):
                 return
+
             time = self.timer.get_time_from_start()
             text_line = f"{self.keys[event.key]} - {time.minute:02}:{time.second:02}:{time.microsecond // 1000:03}\n"
             self.file.write(text_line) if self.in_file else print(text_line)
-
-    class Timer:
-        def __init__(self):
-            self.tick_start = pygame.time.get_ticks()
-
-        def reset(self):
-            self.__init__()
-
-        def get_time_from_start(self):
-            secs = (pygame.time.get_ticks() - self.tick_start) / 1000
-            return datetime.time(minute=int(secs) // 60, second=int(secs) % 60,
-                                 microsecond=int((secs - int(secs)) * 1_000_000))
 
     class Song:
         def __init__(self):
@@ -91,7 +93,6 @@ class SongController(BaseObject):
         self.song.sound, self.data_items = read_song(name)
         self.timer.reset()
         self.empty.start()
-        self.recorder.start()
         self.items.append(self.empty)
         self.index_data_items = 0
         self.game_started = True
@@ -99,6 +100,7 @@ class SongController(BaseObject):
     def check_start_sound(self):
         if not self.song.is_playing and self.empty.is_reached:
             self.song.start()
+            self.recorder.start()
 
     def event(self, event: pygame.event.Event):
         self.recorder.event(event)
