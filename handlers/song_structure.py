@@ -1,5 +1,5 @@
 import datetime
-from settings.arrow_settings import Direction
+from settings.arrow import Direction
 
 
 class ArrowData:

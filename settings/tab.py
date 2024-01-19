@@ -1,6 +1,6 @@
 class TabSettings:
     LINE_PADDING = 5
-    HEIGHT = 500
+    HEIGHT = 400
     CLICK_LINE_WIDTH = 150
     CLICK_LINE_LEFT_MARGIN = 50
     LINE_COLOR = [

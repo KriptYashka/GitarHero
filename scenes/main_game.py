@@ -1,9 +1,4 @@
-import random
-
-import pygame
-
-from objects.arrow import Arrow
-from objects.tab import Tab
+from objects.tab.tab import Tab
 from scenes.base import BaseScene
 
 

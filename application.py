@@ -2,8 +2,8 @@ import pygame
 
 from scenes.main_game import MainGameScene
 from scenes.menu import MenuScene
-from settings.window_settings import Settings
-from settings.scene_settings import SceneController
+from settings.common import Common
+from settings.scene import SceneController
 
 
 class Application:
@@ -34,7 +34,7 @@ class Application:
         self.scenes[SceneController.scene_name].process_logic()
 
     def scene_draw(self):
-        self.screen.fill(Settings.BACKGROUND_COLOR)
+        self.screen.fill(Common.BACKGROUND_COLOR)
         self.scenes[SceneController.scene_name].process_draw(self.screen)
         pygame.display.flip()
 

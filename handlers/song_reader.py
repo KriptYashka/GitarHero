@@ -5,8 +5,8 @@ from typing import List
 import pygame
 
 from handlers.song_structure import ArrowData, AccordData
-from settings.arrow_settings import Direction
-from settings.window_settings import Settings
+from settings.arrow import Direction
+from settings.common import Common
 
 
 def get_data(words: List[str]):
@@ -26,7 +26,7 @@ def get_data(words: List[str]):
 
 
 def read_song(path: str):
-    f_tabs = open(os.path.join(Settings.ROOT_DIR, f"songs/{path}/tabs.txt"))
+    f_tabs = open(os.path.join(Common.ROOT_DIR, f"songs/{path}/tabs.txt"))
     key_data = []
     for line in f_tabs:
         if line.startswith("#"):
@@ -34,6 +34,6 @@ def read_song(path: str):
         if (item := get_data(line.strip().split())) is not None:
             key_data.append(item)
 
-    song = pygame.mixer.Sound(os.path.join(Settings.ROOT_DIR, f"songs/{path}/song.mp3"))
+    song = pygame.mixer.Sound(os.path.join(Common.ROOT_DIR, f"songs/{path}/song.mp3"))
     return song, key_data
 

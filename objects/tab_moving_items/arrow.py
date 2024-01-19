@@ -1,6 +1,6 @@
 import pygame
 
-from settings.arrow_settings import ArrowSettings, Direction
+from settings.arrow import ArrowSettings, Direction
 from objects.base import BaseObject
 
 
